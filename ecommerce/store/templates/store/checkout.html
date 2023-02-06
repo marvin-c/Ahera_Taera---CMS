@@ -1,37 +1,76 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
-     <div class="row">
+	<style>
+		.tago{
+			display:none;
+		}  
+		.fieldgroup{
+			float: left;
+			width: auto;
+			margin-left: 3em;
+		 }
+		.tunga{
+			margin: auto;
+			width: 50%;
+			padding: 10px;
+		}
+	</style>
+		
+
+	<div class="row">
 		<div class="col-lg-6">
 			<div class="box-element" id="form-wrapper">
 				<form id="form">
 					<div id="user-info">
 						<div class="form-field">
-							<input required class="form-control" type="text" name="name" placeholder="Name..">
+							<input required class="form-control" type="text" name="firstname" placeholder="First Name..">
+						</div>
+						<div class="form-field">
+							<input required class="form-control" type="text" name="lastname" placeholder="Last Name..">
 						</div>
 						<div class="form-field">
 							<input required class="form-control" type="email" name="email" placeholder="Email..">
 						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="contactnumber" placeholder="Contact Number..">
+						</div>
 					</div>
-					
-					<div id="shipping-info">
+					<div>
+						<br>
+						<hr>
+						<p>Delivery options:</p>
+						<div class="tunga">
+							<div class="fieldgroup">
+								<input type="radio" name="choose" value="hide" onclick="showHideDiv(1)" checked="checked"> Store Pickup
+							</div>
+							<div class="fieldgroup">
+								<input type="radio" name="choose" value="show" onclick="showHideDiv(2)"> Ship to Address
+							</div>
+						</div>
+
+					</div>	
+					<br>
+					<br>
+
+					<div id="shipping-info" class='tago'>
 						<hr>
 						<p>Shipping Information:</p>
 						<hr>
 						<div class="form-field">
-							<input class="form-control" type="text" name="address" placeholder="Address..">
+							<input class="form-control" type="text" name="street" placeholder="Street..">
+						</div>
+						<div class="form-field">
+							<input class="form-control" type="text" name="suburb" placeholder="Suburb..">
 						</div>
 						<div class="form-field">
 							<input class="form-control" type="text" name="city" placeholder="City..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="state" placeholder="State..">
+							<input class="form-control" type="text" name="country" placeholder="Country..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="zipcode" placeholder="Zip code..">
-						</div>
-						<div class="form-field">
-							<input class="form-control" type="text" name="country" placeholder="Zip code..">
+							<input class="form-control" type="text" name="postcode" placeholder="Postcode..">
 						</div>
 					</div>
 
@@ -42,7 +81,14 @@
 
 			<br>
 			<div class="box-element hidden" id="payment-info">
-				<small>Paypal Options</small>
+				<p>Please select your payment options</p>
+				<input type="radio" id="mastercard" name="fav_language" value="HTML">
+				<label for="visa"><small>VISA</small></label><br>
+				<input type="radio" id="mastercard" name="fav_language" value="CSS">
+				<label for="mastercard"><small>Mastercard</small></label><br>
+				<input type="radio" id="banktransfer" name="fav_language" value="JavaScript">
+				<label for="banktransfer"><small>Bank Transfer</small></label>
+				<br>
 				<button id="make-payment">Make payment</button>
 			</div>
 			
@@ -63,63 +109,151 @@
 				</div>
 				{% endfor %}
 				<h5>Items:   {{order.get_cart_items}}</h5>
-				<h5>Total:   ${{order.get_cart_total|floatformat:2}}</h5>
+				Sub Total:   ${{order.get_cart_total|floatformat:2}}
+				<br>
+				dob: {{ request.user.customer.dob }}
+				<br>
+
+				{% comment %} age: {{ calculateAge(request.user.customer.dob) }} {% endcomment %}
+				location: {{ request.user.customer.city }}
+
+				<br>
+				<br>
+				<span id="age"></span>
+				<br>
+
+				<span id="location"></span>
+				<br>
+				<span id="dayOfWeek"></span>
+
+				{% comment %} Discount: <span id="discount"></span {% endcomment %}
+				<br>
+
+				<div id="shipping" class='tago'>
+					Shipping: $ 10.00
+				</div>
+				<br>
+
+				<div id="shipping" class='tago'>
+				</div>
+				<br>
+				<br>
+
+				<h5 id="total"></h5>
+
 			</div>
 		</div>
 	</div>
 
 	<script type="text/javascript">
 		var shipping = '{{order.shipping}}'
-		var total = '{{order.get_cart_total}}'
-
-		if (shipping == 'False'){
-		 	document.getElementById('shipping-info').innerHTML = ''
-		}
-
-		if (user != 'AnonymousUser'){
-		 	document.getElementById('user-info').innerHTML = ''
-		 }
-
-		if (shipping == 'False' && user != 'AnonymousUser'){
-			//Hide entire form if user is logged in and shipping is false
-				document.getElementById('form-wrapper').classList.add("hidden");
-				//Show payment if logged in user wants to buy an item that does not require shipping
-			    document.getElementById('payment-info').classList.remove("hidden");
-		}
-
+		document.querySelector('#total').textContent = 'Total: ${{order.get_cart_total|floatformat:2}}'
 		var form = document.getElementById('form')
 		form.addEventListener('submit', function(e){
 	    	e.preventDefault()
 	    	console.log('Form Submitted...')
 	    	document.getElementById('form-button').classList.add("hidden");
 	    	document.getElementById('payment-info').classList.remove("hidden");
-	    })
+	    }) 
 
 	    document.getElementById('make-payment').addEventListener('click', function(e){
 	    	submitFormData()
 	    })
+		{% comment %} const dob = {{ request.user.customer.dob|date:"Y-m-d" }};
+		document.getElementById("age").innerHTML = calculateAge(dob); {% endcomment %}
+		const dobString = "{{ request.user.customer.dob|date:'F j, Y' }}";
+		const dobArray = dobString.split(" ");
+		const month = new Date(dobArray[0] + " 1, 2000").getMonth() + 1;
+		const day = dobArray[1].replace(",", "");
+		const year = dobArray[2];
+		const dob = year + "-" + month + "-" + day;
+	    const loc = "{{ request.user.customer.city }}";
+		document.getElementById("age").innerHTML = calculateDiscountbyAge(dob);
+		document.getElementById("location").innerHTML = calculateDiscountbyLocation(loc);
+		const today = new Date();
+		const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+		const dayOfWeek = daysOfWeek[today.getUTCDay()];
+		document.getElementById("dayOfWeek").innerHTML = dayOfWeek;
+
+
+		function calculateDiscountbyAge(dob) {
+			let discount = 0;
+			const today = new Date();
+			const birthDate = new Date(dob);
+			let age = today.getFullYear() - birthDate.getFullYear();
+			const m = today.getMonth() - birthDate.getMonth();
+			if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+			  age--;
+			}
+			age = 61;
+			if (age > 60 ) {
+				discount += 0.1;
+				return 'Senior discount: ';
+			} else {
+				return '';
+			}
+		  }
+
+		function calculateDiscountbyLocation(location){
+			if (location == "Auckland" || location == "Wellington") {
+				discount += 0.01;
+				return 'discount on location';
+			} else {
+				return '';
+			}
+		}
+
+		function calculateDiscountbyDoW(dow){
+			document.getElementById("dayOfWeek").innerHTML = dayOfWeek;
+			if (dayOfWeek === "Saturday" || dayOfWeek === "Sunday") {
+				discount += 0.02;
+				return 'discount on day'
+			} else {
+				return '';
+			}
+		}
+		function showHideDiv(val) {
+			var total = '{{order.get_cart_total}}';
+			total = parseFloat(total.replace(/[^0-9.]/g, ''));
+			
+			if (val == 1) {
+			  document.getElementById('shipping-info').style.display = 'none';
+			  document.getElementById('shipping').style.display = 'none';
+			  document.querySelector('#total').textContent = 'Total: $' + total.toFixed(2);
+			} else {
+			  document.getElementById('shipping-info').style.display = 'block';
+			  document.getElementById('shipping').style.display = 'block';
+			  var ship = 10;
+			  total += ship;
+			  document.querySelector('#total').textContent = 'Total: $' + total.toFixed(2);
+			}
+		  }
+		
 
 	    function submitFormData(){
 	    	console.log('Payment button clicked')
 
 	    	var userFormData = {
-				'name':null,
+				'firstname':null,
+				'lastname':null,
+				'contactnumber':null,
 				'email':null,
 				'total':total,
 			}
 
 			var shippingInfo = {
-				'address':null,
+				'street':null,
 				'city':null,
-				'state':null,
-				'zipcode':null,
+				'suburb':null,
+				'postcode':null,
+				'country':null,
 			}
 
 			if (shipping != 'False'){
-	    		shippingInfo.address = form.address.value
+	    		shippingInfo.street = form.street.value
 		    	shippingInfo.city = form.city.value
-		    	shippingInfo.state = form.state.value
-		    	shippingInfo.zipcode = form.zipcode.value
+		    	shippingInfo.suburb = form.suburb.value
+		    	shippingInfo.postcode = form.postcode.value
 	    	}
 
 	    	if (user == 'AnonymousUser'){
@@ -149,6 +283,7 @@
 				})
 	    }
 	</script>
+
 {% endblock content %}
 
 
