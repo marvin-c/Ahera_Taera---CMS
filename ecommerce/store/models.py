@@ -5,18 +5,28 @@ from django.contrib.auth.models import User
 
 class Customer(models.Model):
 	user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
-	name = models.CharField(max_length=200, null=True)
+	first_name = models.CharField(max_length=200, null=True)
+	last_name = models.CharField(max_length=200, null=True)
 	email = models.CharField(max_length=200)
+	dob = models.DateField()
+	phonenumber = models.CharField(max_length=20)
+	street = models.CharField(max_length=50)
+	suburb = models.CharField(max_length=50)
+	city = models.CharField(max_length=50)
+	country = models.CharField(max_length=50)
+	postcode = models.PositiveIntegerField()
 
 	def __str__(self):
-		return self.name
+		return self.first_name + " " + self.last_name
 
 
 class Product(models.Model):
 	name = models.CharField(max_length=200)
 	price = models.FloatField()
-	digital = models.BooleanField(default=False,null=True, blank=True)
+	stock = models.BooleanField(default=True,null=True, blank=True)
 	image = models.ImageField(null=True, blank=True)
+	description = models.CharField(max_length=200)
+	digital = models.BooleanField(default=False,null=True, blank=True)
 
 	def __str__(self):
 		return self.name

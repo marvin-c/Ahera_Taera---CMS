@@ -1,17 +1,35 @@
 {% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
+
 	<div class="row">
+        {% comment %} {% csrf_token %} {% endcomment %}
 		{% for product in products %}
 		<div class="col-lg-4">
 			<img class="thumbnail" src="{{product.imageURL}}">
 			<div class="box-element product">
 				<h6><strong>{{product.name}}</strong></h6>
 				<hr>
+				{% if user.is_authenticated %}
+					<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+				{% else %}
+					{% comment %} <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button> {% endcomment %}
+					<a href="{% url 'login' %}" class="btn btn-outline-secondary add-btn update-cart">Login to add to cart</a>
 
-				<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
-				<a class="btn btn-outline-success" href="#">View</a>
+				{% endif %}
+				
 				<h4 style="display: inline-block; float: right"><strong>${{product.price|floatformat:2}}</strong></h4>
+				<br>
+				<br>
+
+				<h6><strong>Description:</strong></h6>
+				<br>
+				<h6>{{product.description}}</h6>
+				{% if product.stock %}
+					<h6><strong>In-stock</strong></h6>
+				{% else %}
+					<h6><strong>Out of stock</strong></h6>
+				{% endif %}
 			</div>
 		</div>
 		{% endfor %}

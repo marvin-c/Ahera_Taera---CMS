@@ -3,6 +3,13 @@ from django.http import JsonResponse
 import json
 import datetime
 from .models import * 
+from django.contrib.auth import authenticate, login, logout
+from django.shortcuts import render, redirect
+from django import forms
+from .forms import RegisterUserForm    
+from django.contrib import messages
+from .models import Customer
+
 
 def store(request):
 
@@ -101,3 +108,68 @@ def processOrder(request):
 		print('User is not logged in')
 
 	return JsonResponse('Payment submitted..', safe=False)
+
+def login_user(request):
+    if request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('store')
+        else:
+            messages.success(request, ("Invalid username or password."))
+            return render(request, 'store/login.html', {})
+    else:
+        return render(request, 'store/login.html', {})		
+
+
+def register_user(request):
+    if request.method == 'POST':
+        form = RegisterUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password1']
+            firstname = form.cleaned_data['first_name']
+            lastname = form.cleaned_data['last_name']
+            email = request.POST.get('email')
+            dob = request.POST.get('dob')
+            phonenumber = request.POST.get('phonenumber')
+            street = request.POST.get('street')
+            suburb = request.POST.get('suburb')
+            city = request.POST.get('city')
+            country = request.POST.get('country')
+            postcode = request.POST.get('postcode')
+			# Get the User instance instead of the username string
+            user_instance = User.objects.get(username=username)
+            Customer.objects.create(user=user_instance,
+									first_name=firstname,
+                                    last_name=lastname,
+                                    email=email,
+                                    dob=dob,
+                                    phonenumber=phonenumber,
+                                    street=street,
+                                    suburb=suburb,
+                                    city=city,
+                                    country=country,
+                                    postcode=postcode)
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return redirect('store')
+        else:
+            form = RegisterUserForm()
+            messages.warning(request, "Error on form... Try again...")
+            return render(request, 'store/register.html', {
+                'form': form,
+            })
+    else:
+        form = RegisterUserForm()
+        return render(request, 'store/register.html', {
+            'form': form,
+        })
+
+def logout_user(request):
+    # messages.success(request, ("You have logged out successfully..."))
+    logout(request)
+    return redirect('store')

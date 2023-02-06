@@ -1,0 +1,72 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <style>
+      .button {
+        background-color: #4CAF50;
+        border: none;
+        color: white;
+        padding: 6px 25px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 14px;
+        margin: 4px 2px;
+        cursor: pointer;
+      }
+      .boxlogin {
+        width: 300px;
+        border: 15px solid green;
+        padding: 50px;
+        text-align: center;
+        margin: auto;
+        margin-top: 5%;
+      }
+ 
+    </style>
+
+  </head>
+  <body>
+    
+    
+    <div class = "container">
+      {% if messages %}
+      {%for message in messages%}
+      {{message}}
+      {%endfor%}
+      
+      {% endif %}
+      <!-- Custom styles for this template -->
+      <link href="sign-in.css" rel="stylesheet">
+    </div>
+    <body class="text-center">
+      
+      <main class="boxlogin">
+      <h2>Login</h2>
+      <form action="" method=POST>
+        {% csrf_token %}
+        <div class="mb-3">
+          <label for="exampleInputEmail1" class="form-label">Username</label>
+          <input type="text" class="form-control" name="username" >
+        </div>
+        <div class="mb-3">
+          <label for="exampleInputPassword1" class="form-label">Password</label>
+          <input type="password" class="form-control" name="password">
+        </div>
+        
+        <button type="submit" class="button">Login</button>
+        <a href="{% url 'register' %}" class="button">Register</a>
+      </form>
+    </main>
+  </body>
+</html>
+  
+{% endblock content %}
+
