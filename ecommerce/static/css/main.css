@@ -83,6 +83,7 @@ h1,h2,h3,h4,h5,h6{
 
 .chg-quantity{
 	width: 12px;
+	height: 12px;
 	cursor: pointer;
 	display: block;
 	margin-top: 5px;
@@ -96,4 +97,13 @@ h1,h2,h3,h4,h5,h6{
 
 .hidden{
 	display: none!important;
+}
+
+#plusminus{
+	width: 12px;
+	height: 12px;
+	cursor: pointer;
+	display: block;
+	margin-top: 5px;
+	transition:.1s;
 }
