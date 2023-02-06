@@ -9,7 +9,7 @@ from django import forms
 from .forms import RegisterUserForm    
 from django.contrib import messages
 from .models import Customer
-
+from datetime import datetime
 
 def store(request):
 
@@ -34,6 +34,7 @@ def cart(request):
 		order, created = Order.objects.get_or_create(customer=customer, complete=False)
 		items = order.orderitem_set.all()
 		cartItems = order.get_cart_items
+		# age = Customer.age(1)
 	else:
 		items = []
 		order = {'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
@@ -45,9 +46,13 @@ def cart(request):
 def checkout(request):
 	if request.user.is_authenticated:
 		customer = request.user.customer
+		# dob = request.user.pk
 		order, created = Order.objects.get_or_create(customer=customer, complete=False)
 		items = order.orderitem_set.all()
 		cartItems = order.get_cart_items
+		# customer_age = Customer.objects.get(user.pk)
+		# age = customer_age.age()
+		
 	else:
 		items = []
 		order = {'get_cart_total':0, 'get_cart_items':0, 'shipping':False}
@@ -55,6 +60,9 @@ def checkout(request):
 
 	context = {'items':items, 'order':order, 'cartItems':cartItems}
 	return render(request, 'store/checkout.html', context)
+
+def get_age():
+	return request.user.customer.dob
 
 def updateItem(request):
 	data = json.loads(request.body)
