@@ -9,7 +9,7 @@ from django import forms
 from .forms import RegisterUserForm    
 from django.contrib import messages
 from .models import Customer
-from datetime import datetime
+# from datetime import datetime
 
 def store(request):
 
@@ -99,18 +99,23 @@ def processOrder(request):
 		total = float(data['form']['total'])
 		order.transaction_id = transaction_id
 
-		if total == order.get_cart_total:
-			order.complete = True
+		# if total == order.get_cart_total:
+		order.complete = True
 		order.save()
 
 		if order.shipping == True:
 			ShippingAddress.objects.create(
 			customer=customer,
 			order=order,
-			address=data['shipping']['address'],
+			street=data['shipping']['street'],
+			suburb=data['shipping']['suburb'],
 			city=data['shipping']['city'],
-			state=data['shipping']['state'],
-			zipcode=data['shipping']['zipcode'],
+			country=data['shipping']['country'],
+			postcode=data['shipping']['postcode'],
+			# address=data['shipping']['address'],
+			# city=data['shipping']['city'],
+			# state=data['shipping']['state'],
+			# zipcode=data['shipping']['zipcode'],
 			)
 	else:
 		print('User is not logged in')
