@@ -42,7 +42,7 @@
 						<p>Delivery options:</p>
 						<div class="tunga">
 							<div class="fieldgroup">
-								<input type="radio" name="choose" value="hide" onclick="showHideDiv(1)" checked="checked"> Store Pickup
+								<input type="radio" name="choose" value="hide" onclick="showHideDiv(1)"> Store Pickup
 							</div>
 							<div class="fieldgroup">
 								<input type="radio" name="choose" value="show" onclick="showHideDiv(2)"> Ship to Address
@@ -73,12 +73,10 @@
 							<input class="form-control" type="text" name="postcode" placeholder="Postcode..">
 						</div>
 					</div>
-
 					<hr>
 					<input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
 				</form>
 			</div>
-
 			<br>
 			<div class="box-element hidden" id="payment-info">
 				<p>Please select your payment options</p>
@@ -91,9 +89,7 @@
 				<br>
 				<button id="make-payment">Make payment</button>
 			</div>
-			
 		</div>
-
 		<div class="col-lg-6">
 			<div class="box-element">
 				<a  class="btn btn-outline-dark" href="{% url 'cart' %}">&#x2190; Back to Cart</a>
@@ -111,44 +107,31 @@
 				<h5>Items:   {{order.get_cart_items}}</h5>
 				Sub Total:   ${{order.get_cart_total|floatformat:2}}
 				<br>
-				dob: {{ request.user.customer.dob }}
 				<br>
-
-				{% comment %} age: {{ calculateAge(request.user.customer.dob) }} {% endcomment %}
-				location: {{ request.user.customer.city }}
-
+				<small id="age"></small>
 				<br>
+				<small id="location"></small>
 				<br>
-				<span id="age"></span>
+				<small id="dayOfWeek"></small>
 				<br>
-
-				<span id="location"></span>
-				<br>
-				<span id="dayOfWeek"></span>
-
-				{% comment %} Discount: <span id="discount"></span {% endcomment %}
 				<br>
 
 				<div id="shipping" class='tago'>
 					Shipping: $ 10.00
 				</div>
 				<br>
-
-				<div id="shipping" class='tago'>
-				</div>
-				<br>
-				<br>
-
 				<h5 id="total"></h5>
-
 			</div>
 		</div>
 	</div>
-
 	<script type="text/javascript">
-		var shipping = '{{order.shipping}}'
-		document.querySelector('#total').textContent = 'Total: ${{order.get_cart_total|floatformat:2}}'
 		var form = document.getElementById('form')
+		var total = '{{order.get_cart_total}}';
+		var discountAge = 0;
+		var discountLoc = 0;
+		var discountDoW = 0;
+		var totalDiscount = discountAge + discountLoc + discountDoW;
+		total -= totalDiscount;
 		form.addEventListener('submit', function(e){
 	    	e.preventDefault()
 	    	console.log('Form Submitted...')
@@ -159,80 +142,84 @@
 	    document.getElementById('make-payment').addEventListener('click', function(e){
 	    	submitFormData()
 	    })
-		{% comment %} const dob = {{ request.user.customer.dob|date:"Y-m-d" }};
-		document.getElementById("age").innerHTML = calculateAge(dob); {% endcomment %}
+		const today = new Date();
+		const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+		const dayOfWeek = daysOfWeek[today.getUTCDay()];
 		const dobString = "{{ request.user.customer.dob|date:'F j, Y' }}";
 		const dobArray = dobString.split(" ");
 		const month = new Date(dobArray[0] + " 1, 2000").getMonth() + 1;
 		const day = dobArray[1].replace(",", "");
 		const year = dobArray[2];
 		const dob = year + "-" + month + "-" + day;
-	    const loc = "{{ request.user.customer.city }}";
-		document.getElementById("age").innerHTML = calculateDiscountbyAge(dob);
-		document.getElementById("location").innerHTML = calculateDiscountbyLocation(loc);
-		const today = new Date();
-		const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-		const dayOfWeek = daysOfWeek[today.getUTCDay()];
-		document.getElementById("dayOfWeek").innerHTML = dayOfWeek;
-
-
+		var loaded = 0;
+		var prevVal = 0;
 		function calculateDiscountbyAge(dob) {
-			let discount = 0;
+			var subT = "{{order.get_cart_total}}";
 			const today = new Date();
 			const birthDate = new Date(dob);
 			let age = today.getFullYear() - birthDate.getFullYear();
 			const m = today.getMonth() - birthDate.getMonth();
-			if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-			  age--;
-			}
-			age = 61;
-			if (age > 60 ) {
-				discount += 0.1;
-				return 'Senior discount: ';
-			} else {
-				return '';
-			}
-		  }
-
-		function calculateDiscountbyLocation(location){
-			if (location == "Auckland" || location == "Wellington") {
-				discount += 0.01;
-				return 'discount on location';
-			} else {
-				return '';
-			}
-		}
-
-		function calculateDiscountbyDoW(dow){
-			document.getElementById("dayOfWeek").innerHTML = dayOfWeek;
-			if (dayOfWeek === "Saturday" || dayOfWeek === "Sunday") {
-				discount += 0.02;
-				return 'discount on day'
-			} else {
-				return '';
-			}
-		}
-		function showHideDiv(val) {
-			var total = '{{order.get_cart_total}}';
-			total = parseFloat(total.replace(/[^0-9.]/g, ''));
 			
-			if (val == 1) {
-			  document.getElementById('shipping-info').style.display = 'none';
-			  document.getElementById('shipping').style.display = 'none';
-			  document.querySelector('#total').textContent = 'Total: $' + total.toFixed(2);
-			} else {
-			  document.getElementById('shipping-info').style.display = 'block';
-			  document.getElementById('shipping').style.display = 'block';
-			  var ship = 10;
-			  total += ship;
-			  document.querySelector('#total').textContent = 'Total: $' + total.toFixed(2);
+			if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+				age--;
 			}
+			if (age > 60 ) {
+				const orderTotal = "{{order.get_cart_total}}";
+				const discountAge = orderTotal * 0.1;
+				total -= discountAge;
+				return `Senior 10% discount applied, less $${discountAge.toFixed(2)}`;
+			} else {
+				return '';
+			}
+		}
+		function calculateDiscountbyLocation(){
+			if ("{{ request.user.customer.city }}" === "Auckland" || "{{ request.user.customer.city }}" === "Wellington") {
+				const orderTotal = "{{order.get_cart_total}}";
+				const discountLoc = orderTotal * 0.01;
+				total -= discountLoc;
+				return `Auckland and Wellington Residents 1% discount applies, less $${discountLoc.toFixed(2)}`;
+			} else {
+				return '';
+			}
+		}
+		function calculateDiscountbyDoW(dow){
+			// dow = "Saturday";
+			if (dow == "Saturday" || dow == "Sunday") {
+				const orderTotal = "{{order.get_cart_total}}";
+				const discountDoW = orderTotal * 0.02;
+				total -= discountDoW;
+				return `Weekend Discount Specials (Saturdays and Sundays) 2% discount applies, less $${discountDoW.toFixed(2)}`;
+			} else {
+				return '';
+			}
+		} 
+		document.getElementById("age").innerHTML = calculateDiscountbyAge(dob);
+		document.getElementById("location").innerHTML = calculateDiscountbyLocation();
+		document.getElementById("dayOfWeek").innerHTML = calculateDiscountbyDoW(dayOfWeek);
+		function showHideDiv(val) {
+			if (val == 1) {
+				if (loaded !== 0) {
+					if (val !== prevVal){
+						total -= 10;
+					}
+				}
+				document.getElementById('shipping-info').style.display = 'none';
+				document.getElementById('shipping').style.display = 'none';
+				document.querySelector('#total').textContent = 'Total: $' + total.toFixed(2);
+			} else {
+				document.getElementById('shipping-info').style.display = 'block';
+				document.getElementById('shipping').style.display = 'block';
+				if (val !== prevVal){
+					var ship = 10;
+					total += ship;
+				}
+				document.querySelector('#total').textContent = 'Total: $' + total.toFixed(2);
+			}
+			loaded = 1;
+			prevVal = val;
 		  }
-		
-
 	    function submitFormData(){
 	    	console.log('Payment button clicked')
-
 	    	var userFormData = {
 				'firstname':null,
 				'lastname':null,
@@ -282,6 +269,7 @@
 
 				})
 	    }
+		
 	</script>
 
 {% endblock content %}
