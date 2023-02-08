@@ -3,16 +3,16 @@ from django.contrib.auth.models import User
 from django import forms
 
 class RegisterUserForm(UserCreationForm):
-    email = forms.EmailField()
-    first_name = forms.CharField(max_length=50)
-    last_name = forms.CharField(max_length=50)
-    dob = forms.DateField(localize=True, widget=forms.DateInput(format = '%d-%m-%Y',attrs={'type': 'date'}),)
-    phonenumber = forms.CharField(max_length=20)
-    street = forms.CharField(max_length=50)
-    suburb = forms.CharField(max_length=50)
-    city = forms.CharField(max_length=50)
-    country = forms.CharField(max_length=50)
-    postcode = forms.IntegerField()
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class':'form-control'}))
+    first_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
+    last_name = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
+    dob = forms.DateField(label='Date of Birth', localize=True, widget=forms.DateInput(format = '%d-%m-%Y',attrs={'type': 'date'}))
+    phonenumber = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'class':'form-control'}))
+    street = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
+    suburb = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
+    city = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
+    country = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class':'form-control'}))
+    postcode = forms.IntegerField(widget=forms.TextInput(attrs={'class':'form-control'}))
 
     class Meta:
         model = User
@@ -20,8 +20,8 @@ class RegisterUserForm(UserCreationForm):
                   'first_name', 
                   'last_name', 
                   'email', 
-                  'password1', 
-                  'password2', 
+                  'password1',
+                  'password2',
                   'dob',
                   'phonenumber',
                   'street',
@@ -30,3 +30,9 @@ class RegisterUserForm(UserCreationForm):
                   'country',
                   'postcode',
                   )
+    
+    def __init__(self, *args, **kwargs):
+        super(RegisterUserForm, self).__init__(*args, **kwargs)
+        self.fields['username'].widget.attrs['class'] = 'form-control'
+        self.fields['password1'].widget.attrs['class'] = 'form-control'
+        self.fields['password2'].widget.attrs['class'] = 'form-control'
