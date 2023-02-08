@@ -122,6 +122,7 @@ def processOrder(request):
 
 	return JsonResponse('Payment submitted..', safe=False)
 
+# Login User function with validation
 def login_user(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -136,7 +137,7 @@ def login_user(request):
     else:
         return render(request, 'store/login.html', {})		
 
-
+# Register user function with validation
 def register_user(request):
     if request.method == 'POST':
         form = RegisterUserForm(request.POST)
@@ -182,6 +183,7 @@ def register_user(request):
             'form': form,
         })
 
+# Logout user function
 def logout_user(request):
     # messages.success(request, ("You have logged out successfully..."))
     logout(request)
