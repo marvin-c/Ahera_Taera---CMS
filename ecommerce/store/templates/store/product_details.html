@@ -1,0 +1,50 @@
+{% extends 'store/main.html' %}
+{% load static %}
+{% block content %}
+
+<!-- <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script> -->
+<!------ Include the above in your HEAD tag ---------->
+
+<!DOCTYPE html>
+<html>
+    <body>
+        <div class="container">
+			<a  class="btn btn-outline-dark" href="{% url 'store' %}">&#x2190; Continue Shopping</a>
+            <br>
+            <br>
+        	<div class="row">
+               <div class="col-xs-4 item-photo">
+                    <img style="max-width:100%;" src="{{product.imageURL}}" />
+
+                </div>
+                <div class="col-xs-5" style="border:0px solid gray">
+                    <!-- Datos del vendedor y titulo del producto -->
+                    <h3>{{product.name}}</h3>    
+                    <h5 style="color:#337ab7"><a href="#">In - stock</a></h5>
+                    <h3 style="margin-top:0px;">${{product.price|floatformat:2}}</h3>
+                    <div class="section" style="padding-bottom:20px;">
+                        <button class="btn btn-success"><span style="margin-right:20px" class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>Add to Cart</button>
+                        <h6><a href="#"><span class="glyphicon glyphicon-heart-empty" style="cursor:pointer;"></span> Like</a></h6>
+                    </div>                                        
+                </div>                              
+        
+                <div class="col-xs-9">
+                    <br><br><br>
+                    <h6><strong>Description:</strong></h6>
+                    <div style="width:100%;border-top:1px solid silver">
+                        <p style="padding:15px;">
+                            <small>
+                                {{product.description}}
+                            </small>
+                        </p>
+                    </div>
+                </div>		
+            </div>
+        </div>        
+    </body>
+</html>
+
+
+{% endblock content %}
