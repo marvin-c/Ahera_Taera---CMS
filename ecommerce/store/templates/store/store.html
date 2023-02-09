@@ -8,14 +8,17 @@
 		<div class="col-lg-4">
 			<img class="thumbnail" src="{{product.imageURL}}">
 			<div class="box-element product">
-				<h6><strong>{{product.name}}</strong></h6>
+				<h6><strong>{{product.name| slice:"40"}}</strong></h6>
 				<hr>
 				{% if user.is_authenticated %}
 					<button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+					<a href="{% url 'product_details' product.id %}" class="btn btn-success">Details</a>
+
+
 				{% else %}
 					{% comment %} <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button> {% endcomment %}
 					<a href="{% url 'login' %}" class="btn btn-outline-secondary add-btn update-cart">Login to add to cart</a>
-
+					<a href="{% url 'product_details' product.id %}" class="btn btn-success">Details</a>
 				{% endif %}
 				
 				<h4 style="display: inline-block; float: right"><strong>${{product.price|floatformat:2}}</strong></h4>
@@ -24,7 +27,7 @@
 
 				<h6><strong>Description:</strong></h6>
 				<br>
-				<h6>{{product.description}}</h6>
+				<h6>{{product.description | slice:"40"}}...</h6>
 				{% if product.stock %}
 					<h6><strong>In-stock</strong></h6>
 				{% else %}

@@ -188,3 +188,13 @@ def logout_user(request):
     # messages.success(request, ("You have logged out successfully..."))
     logout(request)
     return redirect('store')
+
+def product_details(request, product_id):
+    items = Product.objects.all()
+    customer = request.user.customer
+    product = Product.objects.get(id=product_id)
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+
+    orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+    context = {'product': product, 'order': order}
+    return render(request, 'store/product_details.html', context)

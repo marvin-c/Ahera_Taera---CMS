@@ -8,7 +8,6 @@ from .forms import RegisterUserForm
 class BasicTest(TestCase):
 
      # 1. test Customer table if saving customer data
-
     def test_Customer(self):
         customer = Customer()
         customer.first_name = "Marvin"
