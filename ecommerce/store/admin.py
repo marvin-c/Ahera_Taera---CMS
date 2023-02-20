@@ -16,8 +16,8 @@ class CustomOrderAdmin(admin.ModelAdmin):
             return False
         return True
 
-admin.site.site_header = 'Welcome to Ahera Taera administration'
-admin.site.site_title = 'Welcome to Ahera Taera administration'
+admin.site.site_header = 'Welcome to Ahera Taera Administration Dashboard'
+admin.site.site_title = 'Welcome to Ahera Taera Administration'
 admin.site.register(Customer)
 admin.site.register(Product)
 admin.site.register(Order, CustomOrderAdmin) 
