@@ -2,11 +2,6 @@
 {% load static %}
 {% block content %}
 
-<!-- <link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
-<script src="//code.jquery.com/jquery-1.11.1.min.js"></script> -->
-<!------ Include the above in your HEAD tag ---------->
-
 <!DOCTYPE html>
 <html>
     <body>
@@ -20,12 +15,15 @@
 
                 </div>
                 <div class="col-xs-5" style="border:0px solid gray">
-                    <!-- Datos del vendedor y titulo del producto -->
                     <h3>{{product.name}}</h3>    
                     <h5 style="color:#337ab7"><a href="#">In - stock</a></h5>
                     <h3 style="margin-top:0px;">${{product.price|floatformat:2}}</h3>
                     <div class="section" style="padding-bottom:20px;">
-                        <button class="btn btn-success"><span style="margin-right:20px" class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>Add to Cart</button>
+                        {% if user.is_authenticated %}
+                            <button data-product="{{product.id}}" data-action="add" class="btn btn-outline-secondary add-btn update-cart">Add to Cart</button>
+                        {% else %}
+                            <a href="{% url 'login' %}" class="btn btn-success add-btn update-cart">Login to add to cart</a>
+                        {% endif %}
                         <h6><a href="#"><span class="glyphicon glyphicon-heart-empty" style="cursor:pointer;"></span> Like</a></h6>
                     </div>                                        
                 </div>                              
