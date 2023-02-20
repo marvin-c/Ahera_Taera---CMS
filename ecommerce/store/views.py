@@ -190,11 +190,17 @@ def logout_user(request):
     return redirect('store')
 
 def product_details(request, product_id):
-    items = Product.objects.all()
-    customer = request.user.customer
-    product = Product.objects.get(id=product_id)
-    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+	if request.user.is_authenticated:
+		items = Product.objects.all()
+		customer = request.user.customer
+		product = Product.objects.get(id=product_id)
+		order, created = Order.objects.get_or_create(customer=customer, complete=False)
 
-    orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
-    context = {'product': product, 'order': order}
-    return render(request, 'store/product_details.html', context)
+		orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+		context = {'product': product}
+		return render(request, 'store/product_details.html', context)
+	else:
+		items = Product.objects.all()
+		product = Product.objects.get(id=product_id)
+		context = {'product': product}
+		return render(request, 'store/product_details.html', context)
