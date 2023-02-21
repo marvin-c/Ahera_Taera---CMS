@@ -4,12 +4,15 @@ from django.contrib.auth.admin import UserAdmin
 from .models import *
 
 # Register your models here.
+
+# Admin to restrict add permission on order items table
 class CustomOrderItemAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         if request.user.username == 'mcjev':
             return False
         return True
 
+# Admin to restrict add persmission on order table
 class CustomOrderAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         if request.user.username == 'mcjev':
